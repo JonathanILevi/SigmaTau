@@ -1,0 +1,120 @@
+name: sigmatau-ship
+version: 0.1.0
+synopsis: Game
+description: "Bridge Simulator"
+maintainer: Jonathan Levi <JonathanILevi@gmail.com>
+category: Game
+extra-source-files: ""
+##  - CHANGELOG.md
+
+# To remove tab warning
+ghc-options: "-w -Woverlapping-patterns -Wwarnings-deprecations -Wdeprecations -Wdeprecated-flags -Wunrecognised-pragmas -Wredundant-constraints -Wduplicate-exports -Woverflowed-literals -Wempty-enumerations -Wmissing-fields -Wmissing-methods -Wwrong-do-bind -Wunsupported-calling-conventions -Wdodgy-foreign-imports -Winline-rule-shadowing -Wunsupported-llvm-version -Wunrecognised-warning-flags -Winaccessible-code -Wstar-is-type -Wstar-binder"
+
+dependencies:
+  - base >=4.12 && <5
+
+internal-libraries:
+  terminal-networking:
+    source-dirs: src/terminal-networking
+    exposed-modules:
+      - TerminalServer
+      - Terminal
+    dependencies:
+      - bytestring
+      - text
+      - warp
+      - wai
+      - http-types
+      - wai-app-static
+      - wai-websockets
+      - websockets
+      - stm
+      
+      - component-id
+      - terminal-msg
+      - terminal-msg-serialize
+  
+  terminal-msg:
+    source-dirs: src/terminal-msg
+    exposed-modules:
+      - Msg.Up
+      - Msg.Down
+      - Msg.ComponentUp
+      - Msg.ComponentDown
+      - Msg.Bridge.Up
+      - Msg.Bridge.Down
+      - Msg.Thruster.Up
+      - Msg.Thruster.Down
+    dependencies:
+      - bytestring
+      - text
+      
+      - component-id
+  terminal-msg-serialize:
+    source-dirs: src/terminal-msg-serialize
+    exposed-modules:
+      - Msg.Serialize
+    dependencies:
+      - bytestring
+      - text
+      - cereal
+      - either
+      
+      - terminal-msg
+      - component-id
+  ship-msg:
+    source-dirs: src/ship-msg
+    exposed-modules:
+      - ShipMsg.Bridge.To
+      - ShipMsg.Bridge.From
+      - ShipMsg.Thruster.To
+      - ShipMsg.Thruster.From
+    dependencies:
+      - bytestring
+      - text
+      
+      - component-id
+  
+  ship:
+    source-dirs: src/ship
+    exposed-modules:
+      - Ship
+    dependencies:
+      - bytestring
+      - text
+      - stm
+      
+      - component-id
+      - terminal-msg
+      - ship-msg
+      - components
+  components:
+    source-dirs: src/components
+    exposed-modules:
+      - Components.Bridge
+      - Components.Thruster
+    dependencies:
+      - bytestring
+      - text
+      
+      - terminal-msg
+      - ship-msg
+    
+  component-id:
+    source-dirs: src/component-id
+    exposed-modules:
+      - ComponentID
+      - ComponentType
+    dependencies: []
+  
+    
+
+executable:
+  main: Main.hs
+  source-dirs: src/main
+  dependencies:
+    - stm
+    
+    - terminal-networking
+    - ship
+    - components
