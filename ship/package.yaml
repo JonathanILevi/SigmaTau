@@ -62,18 +62,6 @@ internal-libraries:
       
       - terminal-msg
       - component-id
-  ship-msg:
-    source-dirs: src/ship-msg
-    exposed-modules:
-      - ShipMsg.Bridge.To
-      - ShipMsg.Bridge.From
-      - ShipMsg.Thruster.To
-      - ShipMsg.Thruster.From
-    dependencies:
-      - bytestring
-      - text
-      
-      - component-id
   
   ship:
     source-dirs: src/ship
@@ -86,7 +74,6 @@ internal-libraries:
       
       - component-id
       - terminal-msg
-      - ship-msg
       - components
   components:
     source-dirs: src/components
@@ -98,7 +85,6 @@ internal-libraries:
       - text
       
       - terminal-msg
-      - ship-msg
     
   component-id:
     source-dirs: src/component-id
