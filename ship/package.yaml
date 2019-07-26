@@ -91,7 +91,8 @@ internal-libraries:
     exposed-modules:
       - ComponentID
       - ComponentType
-    dependencies: []
+    dependencies:
+      - hashable
   
     
 
