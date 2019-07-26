@@ -1,5 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Terminal (runTerminal, TerminalSendChan) where
+{-# LANGUAGE TupleSections #-}
+module Terminal (runTerminal) where
+
+import Control.Monad (void, forever)
 
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan
@@ -12,7 +15,9 @@ import Network.Wai.Application.Static
 import Network.Wai.Handler.WebSockets
 import Network.WebSockets
 
-import Data.ByteString.Lazy (fromStrict)
+import Data.ByteString.Lazy (fromStrict, toStrict)
+
+import Data.FRP.Push as FRP
 
 import ComponentID
 import ComponentType
@@ -22,22 +27,26 @@ import Msg.Down
 import Msg.ComponentUp
 import Msg.ComponentDown
 import Msg.Bridge.Up as MBU
+import Msg.Bridge.Down as MBD
 import Msg.Serialize
 
-type TerminalSendChan = Chan DownMsg
-
-runTerminal :: TChan (TerminalSendChan, LackingUpMsg) -> Connection -> IO ()
-runTerminal upMsgChan connection = do
+runTerminal :: Push (Push DownMsg, LackingUpMsg) -> Connection -> IO ()
+runTerminal upMsgPush connection = do
 	putStrLn "New Connection"
 	sendChannel <- newChan
-	atomically $ writeTChan upMsgChan $ (sendChannel, makeMsgLacking $ UpMsg (ComponentID 0) (BridgeUpMsg MBU.Connect))
+	let sendPush = newPush (\m->print m>>writeChan sendChannel m)
+	FRP.send upMsgPush $ (sendPush, makeMsgLacking $ UpMsg (ComponentID 0) (BridgeUpMsg MBU.Connect))
 	--reading thread
 	forkIO $ do
-		return ()
+		forever $ do
+			dataMsg <- receiveDataMessage connection
+			putStr "recieved: "
+			print dataMsg
+			case dataMsg of
+				(Binary d) -> void $ sequenceA $ FRP.send upMsgPush . (sendPush,) <$> (unserializeUpMsg $ toStrict d)
+				(Text _ _) -> return ()
 	--writing thread
-	forkIO $ do
-		sequence_ =<< fmap (sendDataMessage connection . Binary . fromStrict . serializeDownMsg) <$> getChanContents sendChannel
-	return ()
+	sequence_ =<< fmap (sendDataMessage connection . Binary . fromStrict . serializeDownMsg) <$> getChanContents sendChannel
 
 
 

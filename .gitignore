@@ -2,3 +2,5 @@
 ship/dist-newstyle/
 
 *.cabal
+
+ship/\.ghc\.environment.*

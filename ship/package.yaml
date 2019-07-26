@@ -30,6 +30,8 @@ internal-libraries:
       - websockets
       - stm
       
+      - frp
+      
       - component-id
       - terminal-msg
       - terminal-msg-serialize
@@ -70,7 +72,12 @@ internal-libraries:
     dependencies:
       - bytestring
       - text
+      - containers
       - stm
+      - stm-containers
+      - composition-extra
+      
+      - frp
       
       - component-id
       - terminal-msg
@@ -78,12 +85,19 @@ internal-libraries:
   components:
     source-dirs: src/components
     exposed-modules:
+      - Component
       - Components.Bridge
       - Components.Thruster
     dependencies:
       - bytestring
       - text
+      - stm
+      - stm-containers
+      - containers
       
+      - frp
+      
+      - component-id
       - terminal-msg
     
   component-id:
@@ -110,14 +124,16 @@ internal-libraries:
       - Control.FRP.Splitable
     dependencies:
       - containers
+  
     
-
 
 executable:
   main: Main.hs
   source-dirs: src/main
   dependencies:
     - stm
+    
+    - frp
     
     - terminal-networking
     - ship

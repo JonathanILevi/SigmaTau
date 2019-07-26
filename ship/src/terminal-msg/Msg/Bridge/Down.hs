@@ -1,6 +1,9 @@
 module Msg.Bridge.Down where
 
-data BridgeDownMsg	= Add
-	| Remove
+import ComponentID
+import ComponentType
+
+data BridgeDownMsg	= Add ComponentID ComponentType
+	| Remove ComponentID
 	deriving (Show)
 
