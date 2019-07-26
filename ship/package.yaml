@@ -94,7 +94,24 @@ internal-libraries:
     dependencies:
       - hashable
   
+  # General
+  frp:
+    source-dirs: src-general/frp
+    exposed-modules:
+      - Data.FRP.Push
+      - Data.FRP.Pull
+      - Data.FRP.Lifetime
+      - Data.FRP.LifetimePush
+      - Data.FRP.PushSet
+      - Data.FRP.ConstPushSet
+      - Data.FRP.ConstMap
+      - Control.FRP.Push
+      - Control.FRP.Pull
+      - Control.FRP.Splitable
+    dependencies:
+      - containers
     
+
 
 executable:
   main: Main.hs
